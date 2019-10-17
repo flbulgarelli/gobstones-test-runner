@@ -1,11 +1,11 @@
 var assert = require("assert");
-const GobstonesRunner = require('../src/api');
-const runner = new GobstonesRunner()
+const GobstonesTestRunner = require('../src/api');
+const runner = new GobstonesTestRunner()
 
 describe("api", () => {
 
   it("evaluates batches programatically", (done) => {
-    runner.runBatch({
+    runner.runTests({
       "code": "program { Meter(Rojo) }",
       "extraCode": "procedure Meter(color) { Poner(color) }",
       "examples": [
@@ -73,7 +73,7 @@ describe("api", () => {
   });
 
   it("evaluates batches with tables", (done) => {
-    runner.runBatch({
+    runner.runTests({
       "code": "program { Meter(Rojo) }",
       "extraCode": "procedure Meter(color) { Poner(color) }",
       "examples": [

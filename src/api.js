@@ -2,13 +2,13 @@ var mulang = require('./mulang');
 var GobstonesInterpreterApi = require("gobstones-interpreter").GobstonesInterpreterAPI;
 var _ = require("lodash");
 
-class GobstonesRunnner {
+class GobstonesTestRunner {
   constructor(options = {}) {
     this.options = options;
   }
 
   // run multiple batch actions
-  runBatch(batch, action, onError) {
+  runTests(batch, action, onError) {
     this._validateBatch(batch);
 
     var code = _.trim(batch.code || "");
@@ -182,4 +182,4 @@ class GobstonesRunnner {
   }
 }
 
-module.exports = GobstonesRunnner;
+module.exports = GobstonesTestRunner;

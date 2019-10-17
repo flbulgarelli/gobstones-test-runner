@@ -1,7 +1,7 @@
 var should = require("should");
 var _ = require("lodash");
 
-var GobstonesRunner = require("../src/api");
+var GobstonesTestRunner = require("../src/api");
 var mulang = require("../src/mulang");
 
 var s = mulang.s;
@@ -22,7 +22,7 @@ function entryPoint(name, body) {
 var none = s("None");
 
 function ast(code) {
-  return new GobstonesRunner().getMulangAst(code);
+  return new GobstonesTestRunner().getMulangAst(code);
 }
 
 describe("gobstones - mulang", function() {
