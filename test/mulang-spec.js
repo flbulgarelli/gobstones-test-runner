@@ -1,7 +1,7 @@
 var should = require("should");
 var _ = require("lodash");
 
-var GobstonesTestRunner = require("../src/api");
+var GobstonesTestRunner = require("../src/runner");
 var mulang = require("../src/mulang");
 
 var GobstonesInterpreterApi = require("gobstones-interpreter").GobstonesInterpreterAPI;

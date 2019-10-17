@@ -1,5 +1,5 @@
 var assert = require("assert");
-const GobstonesTestRunner = require('../src/api');
+const GobstonesTestRunner = require('../src/runner');
 var GobstonesInterpreterApi = require("gobstones-interpreter").GobstonesInterpreterAPI;
 const runner = new GobstonesTestRunner(new GobstonesInterpreterApi());
 
