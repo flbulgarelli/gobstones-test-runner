@@ -8,23 +8,14 @@ class GobstonesTestRunner {
   }
 
   // run multiple batch actions
-  runTests(batch, action, onError) {
+  runTests(batch) {
     this._validateBatch(batch);
 
-    var code = _.trim(batch.code || "");
-    var extraCode = _.trim(batch.extraCode || "");
-
-    this._withCode((extraCode) => {
-      this._withCode((code) => {
-        try {
-          var mulangAst = this.getMulangAst(code);
-          this._processExamples(batch.examples, code, extraCode,
-            (results) => action(this._buildBatchResult(results, mulangAst)), onError);
-        } catch (e) {
-          onError(e);
-        }
-      }, code);
-    }, extraCode);
+    const code = _.trim(batch.code || "");
+    const extraCode = _.trim(batch.extraCode || "");
+    const mulangAst = this.getMulangAst(code);
+    const testResults = this._processExamples(batch.examples, code, extraCode);
+    return this._buildBatchResult(testResults, mulangAst);
   }
 
   // parse
@@ -115,8 +106,8 @@ class GobstonesTestRunner {
     return this.parse(code).program;
   }
 
-  _processExamples(examples, code, extraCode, action, _onError) {
-    action(examples.map((example) => this._processExample(example, code, extraCode)));
+  _processExamples(examples, code, extraCode) {
+    return examples.map((example) => this._processExample(example, code, extraCode));
   }
 
   _getBoardFromGbb (gbbOrBoard) {
@@ -161,10 +152,6 @@ class GobstonesTestRunner {
     report.result = result;
 
     return report;
-  }
-
-  _withCode (action, code) {
-    action(code);
   }
 
   _validateBatch(batch) {
