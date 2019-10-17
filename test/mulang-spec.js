@@ -4,6 +4,8 @@ var _ = require("lodash");
 var GobstonesTestRunner = require("../src/api");
 var mulang = require("../src/mulang");
 
+var GobstonesInterpreterApi = require("gobstones-interpreter").GobstonesInterpreterAPI;
+
 var s = mulang.s;
 var callable = mulang.callable;
 var reference = mulang.reference;
@@ -22,7 +24,7 @@ function entryPoint(name, body) {
 var none = s("None");
 
 function ast(code) {
-  return new GobstonesTestRunner().getMulangAst(code);
+  return new GobstonesTestRunner(new GobstonesInterpreterApi()).getMulangAst(code);
 }
 
 describe("gobstones - mulang", function() {

@@ -1,10 +1,9 @@
 var mulang = require('./mulang');
-var GobstonesInterpreterApi = require("gobstones-interpreter").GobstonesInterpreterAPI;
 var _ = require("lodash");
 
 class GobstonesTestRunner {
-  constructor(options = {}) {
-    this.options = options;
+  constructor(interpreter) {
+    this.interpreter = interpreter;
   }
 
   // run multiple batch actions
@@ -47,7 +46,7 @@ class GobstonesTestRunner {
   }
 
   _runOperation(code, operation) {
-    var result = this._interpreter()[operation](code);
+    var result = this.interpreter[operation](code);
 
     if (result.reason)
       throw {
@@ -56,19 +55,6 @@ class GobstonesTestRunner {
       };
 
     return result;
-  }
-
-  _interpreter() {
-    var gobstonesApi = new GobstonesInterpreterApi();
-    var timeout = parseInt(this.options.timeout);
-
-    if (_.isFinite(timeout))
-      gobstonesApi.config.setInfiniteLoopTimeout(timeout);
-
-    if (this.options.language)
-      gobstonesApi.config.setLanguage(this.options.language);
-
-    return gobstonesApi;
   }
 
   _interpret(program, board) {
@@ -90,11 +76,11 @@ class GobstonesTestRunner {
   }
 
   _readGbb(gbb) {
-    return this._interpreter().gbb.read(gbb);
+    return this.interpreter.gbb.read(gbb);
   }
 
   _buildGbb(board) {
-    return this._interpreter().gbb.write(board);
+    return this.interpreter.gbb.write(board);
   }
 
   _buildBoard(board) {

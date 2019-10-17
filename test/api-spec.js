@@ -1,6 +1,7 @@
 var assert = require("assert");
 const GobstonesTestRunner = require('../src/api');
-const runner = new GobstonesTestRunner()
+var GobstonesInterpreterApi = require("gobstones-interpreter").GobstonesInterpreterAPI;
+const runner = new GobstonesTestRunner(new GobstonesInterpreterApi());
 
 describe("api", () => {
 
