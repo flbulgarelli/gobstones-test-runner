@@ -1,0 +1,7 @@
+node_modules/**
+tmp/**
+*.log
+*.sublime-workspace
+*.gbs
+bin/rungs-ubuntu64
+bin/tmp

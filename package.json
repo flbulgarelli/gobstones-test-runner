@@ -1,0 +1,23 @@
+{
+  "name": "gobstones-test-runnner",
+  "version": "0.1.0",
+  "description": "Gobstones test runner",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gobstones/gobstones-test-runnner.git"
+  },
+  "author": "Franco Bulgarelli",
+  "license": "ISC",
+  "dependencies": {
+    "gobstones-interpreter": "^2.0",
+    "lodash": "^4.17.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "should": "^11.1.2"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha ./test/*-spec.js"
+  }
+}
