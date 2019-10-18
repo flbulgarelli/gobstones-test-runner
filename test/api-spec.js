@@ -124,25 +124,23 @@ describe("api", () => {
     assert.deepStrictEqual(result, {
       "status": "errored",
       "interpreterStatus": "compilation_error",
-      "result": {
-        "message": "Se encontró una llave abierta \"{\" pero nunca se cierra.",
-        "on": {
-          "range": {
-            "end": {
-              "column": 10,
-              "row": 1
-            },
-            "start": {
-              "column": 9,
-              "row": 1
-            }
+      "message": "Se encontró una llave abierta \"{\" pero nunca se cierra.",
+      "on": {
+        "range": {
+          "end": {
+            "column": 10,
+            "row": 1
           },
-          "region": ""
+          "start": {
+            "column": 9,
+            "row": 1
+          }
         },
-        "reason": {
-          "code": "unmatched-opening-delimiter",
-          "detail": [ "{" ]
-        }
+        "region": ""
+      },
+      "reason": {
+        "code": "unmatched-opening-delimiter",
+        "detail": [ "{" ]
       }
 
     });

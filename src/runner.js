@@ -18,10 +18,11 @@ class GobstonesTestRunner {
       return this._buildBatchResult(testResults, mulangAst);
     } catch (e) {
       if (e.status) {
-        e.interpreterStatus = e.status;
-        e.status = "errored";
-        e.result = Object.assign({}, e.result);
-        return e;
+        return Object.assign(
+          {
+            status: 'errored',
+            interpreterStatus: e.status
+          }, e.result);
       }
       throw e;
     }
