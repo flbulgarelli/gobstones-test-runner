@@ -22,6 +22,7 @@ describe("api", () => {
     })
 
     assert.deepStrictEqual(result, {
+      "status": "failed",
       "results":[
         {
           "status":"passed",
@@ -79,6 +80,7 @@ describe("api", () => {
       ]
     })
     assert.deepStrictEqual(result, {
+      "status": "passed",
       "results":[
         {
           "status":"passed",
@@ -128,6 +130,7 @@ describe("api", () => {
     });
 
     assert.deepEqual(result, {
+      "status": "failed",
       "results":[
         {
           "status":"passed",

@@ -14,6 +14,7 @@ class GobstonesTestRunner {
     const extraCode = _.trim(batch.extraCode || "");
     const mulangAst = this.getMulangAst(code);
     const testResults = this._processExamples(batch.examples, code, extraCode);
+
     return this._buildBatchResult(testResults, mulangAst);
   }
 
@@ -151,7 +152,16 @@ class GobstonesTestRunner {
   }
 
   _buildBatchResult(exampleResults, mulangAst) {
-    return {results: exampleResults, mulangAst: mulangAst};
+    let status;
+    if (exampleResults.some((it) =>  it.status !== 'passed')) {
+      status = 'errored';
+    } else if (exampleResults.every((it) =>  it.result.status == 'passed')) {
+      status = 'passed';
+    } else {
+      status = 'failed';
+    }
+
+    return {status: status, results: exampleResults, mulangAst: mulangAst};
   }
 }
 
