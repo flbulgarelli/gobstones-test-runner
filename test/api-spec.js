@@ -25,24 +25,20 @@ describe("api", () => {
       "status": "failed",
       "results":[
         {
-          "status":"passed",
-          "result":{
-            "status":"failed",
-            "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
-            "expectedBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
-            "finalBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0\n",
-            "returnValue":null
-          }
+          "interpreterStatus":"passed",
+          "status":"failed",
+          "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
+          "expectedBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
+          "finalBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0\n",
+          "returnValue":null
         },
         {
-          "status":"passed",
-          "result":{
-            "status":"failed",
-            "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
-            "expectedBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
-            "finalBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0\n",
-            "returnValue":null
-          }
+          "interpreterStatus":"passed",
+          "status":"failed",
+          "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
+          "expectedBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
+          "finalBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0\n",
+          "returnValue":null
         }
       ],
       "mulangAst":{
@@ -83,14 +79,12 @@ describe("api", () => {
       "status": "passed",
       "results":[
         {
+          "interpreterStatus":"passed",
           "status":"passed",
-          "result": {
-            "status":"passed",
-            "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
-            "expectedBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0\n",
-            "finalBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0\n",
-            "returnValue":null
-          }
+          "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
+          "expectedBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0\n",
+          "finalBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0\n",
+          "returnValue":null
         }
       ],
       "mulangAst":{
@@ -133,14 +127,12 @@ describe("api", () => {
       "status": "failed",
       "results":[
         {
-          "status":"passed",
-          "result":{
-            "status":"failed",
-            "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
-            "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
-            "finalBoard": "GBB/1.0\nsize 2 2\ncell 0 0 Rojo 1\nhead 0 0\n",
-            "returnValue":null
-          }
+          "interpreterStatus":"passed",
+          "status":"failed",
+          "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+          "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+          "finalBoard": "GBB/1.0\nsize 2 2\ncell 0 0 Rojo 1\nhead 0 0\n",
+          "returnValue":null
         }
       ],
       "mulangAst":{

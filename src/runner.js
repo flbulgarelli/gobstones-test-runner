@@ -161,6 +161,10 @@ class GobstonesTestRunner {
       status = 'failed';
     }
 
+    exampleResults = exampleResults.map((it) => {
+      it.result.interpreterStatus = it.status;
+      return it.result;
+    });
     return {status: status, results: exampleResults, mulangAst: mulangAst};
   }
 }
