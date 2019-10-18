@@ -5,7 +5,7 @@ const runner = new GobstonesTestRunner(new GobstonesInterpreterApi());
 
 describe("api", () => {
 
-  it("evaluates batches programatically", () => {
+  it("evaluates tests programatically", () => {
     const result = runner.runTests({
       "code": "program { Meter(Rojo) }",
       "extraCode": "procedure Meter(color) { Poner(color) }",
@@ -65,7 +65,7 @@ describe("api", () => {
     });
   });
 
-  it("evaluates batches programatically with passed tests", () => {
+  it("evaluates tests programatically with passed tests", () => {
     const result = runner.runTests({
       "code": "program { Poner(Rojo) }",
       "examples": [
@@ -111,7 +111,44 @@ describe("api", () => {
     });
   });
 
-  it("evaluates batches with tables", () => {
+  it("evaluates tests programatically with ill-formed code", () => {
+    const result = runner.runTests({
+      "code": "program { Poner(Rojo) ",
+      "examples": [
+        {
+          "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0",
+          "expectedBoard": "GBB/1.0\nsize 4 4\ncell 0 0 Rojo 1\nhead 0 0",
+        }
+      ]
+    })
+    assert.deepStrictEqual(result, {
+      "status": "errored",
+      "interpreterStatus": "compilation_error",
+      "result": {
+        "message": "Se encontró una llave abierta \"{\" pero nunca se cierra.",
+        "on": {
+          "range": {
+            "end": {
+              "column": 10,
+              "row": 1
+            },
+            "start": {
+              "column": 9,
+              "row": 1
+            }
+          },
+          "region": ""
+        },
+        "reason": {
+          "code": "unmatched-opening-delimiter",
+          "detail": [ "{" ]
+        }
+      }
+
+    });
+  });
+
+  it("evaluates tests with tables", () => {
     const result = runner.runTests({
       "code": "program { Meter(Rojo) }",
       "extraCode": "procedure Meter(color) { Poner(color) }",

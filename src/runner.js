@@ -12,10 +12,19 @@ class GobstonesTestRunner {
 
     const code = _.trim(batch.code || "");
     const extraCode = _.trim(batch.extraCode || "");
-    const mulangAst = this.getMulangAst(code);
-    const testResults = this._processExamples(batch.examples, code, extraCode);
-
-    return this._buildBatchResult(testResults, mulangAst);
+    try {
+      const mulangAst = this.getMulangAst(code);
+      const testResults = this._processExamples(batch.examples, code, extraCode);
+      return this._buildBatchResult(testResults, mulangAst);
+    } catch (e) {
+      if (e.status) {
+        e.interpreterStatus = e.status;
+        e.status = "errored";
+        e.result = Object.assign({}, e.result);
+        return e;
+      }
+      throw e;
+    }
   }
 
   // parse
@@ -34,15 +43,21 @@ class GobstonesTestRunner {
 
   // run code
   run(code, initialBoard) {
-    const program = this._parseProgram(code);
-    if (!program) throw { status: "no_program_found" };
-    const result = this._interpret(program, initialBoard);
-    const executionReport = this._buildBoard(result.finalBoard);
-    executionReport.returnValue = result.returnValue;
-
-    return {
-      status: "passed",
-      result: executionReport
+    try {
+      const program = this._parseProgram(code);
+      if (!program) throw { status: "no_program_found" };
+      const result = this._interpret(program, initialBoard);
+      const executionReport = this._buildBoard(result.finalBoard);
+      executionReport.returnValue = result.returnValue;
+      return {
+        status: "passed",
+        result: executionReport
+      }
+    } catch (e) {
+      if (e.status) {
+        return e;
+      }
+      throw e;
     }
   }
 
