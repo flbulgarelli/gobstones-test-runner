@@ -10,7 +10,7 @@ function s(tag, contents) {
   }
 
   if (tag === "Sequence" && contents.length === 0) {
-    return { tag: "None" };
+    return { tag: "None", contents: [] };
   }
 
   if (Array.isArray(contents) && contents.length === 1) {
@@ -21,7 +21,7 @@ function s(tag, contents) {
     return { tag: tag, contents: contents };
   }
 
-  return { tag: tag };
+  return { tag: tag, contents: [] };
 }
 
 //------------------
