@@ -7,15 +7,15 @@ class GobstonesTestRunner {
   }
 
   // run multiple batch actions
-  runTests(batch) {
-    this._validateBatch(batch);
+  runTests(tests) {
+    this._validateTests(tests);
 
-    const code = _.trim(batch.code || "");
-    const extraCode = _.trim(batch.extraCode || "");
+    const code = _.trim(tests.code || "");
+    const extraCode = _.trim(tests.extraCode || "");
     try {
       const mulangAst = this.getMulangAst(code);
-      const testResults = this._processExamples(batch.examples, code, extraCode);
-      return this._buildBatchResult(testResults, mulangAst);
+      const testResults = this._processExamples(tests.examples, code, extraCode);
+      return this._buildTestResult(testResults, mulangAst);
     } catch (e) {
       if (e.status) {
         return Object.assign(
@@ -113,7 +113,7 @@ class GobstonesTestRunner {
     return examples.map((example) => this._processExample(example, code, extraCode));
   }
 
-  _getBoardFromGbb (gbbOrBoard) {
+  _parseGbbIfNeeded(gbbOrBoard) {
     var board;
     if (_.isString(gbbOrBoard)) {
       board = this._readGbb(gbbOrBoard);
@@ -128,18 +128,21 @@ class GobstonesTestRunner {
   }
 
   _processExample(example, code, extraCode) {
+    let exampleResult;
     try {
       var finalStudentCode = example.codeOverride || code;
       var finalCode = this._buildBatchCode(finalStudentCode, extraCode);
-      var initialBoard = this._getBoardFromGbb(example.initialBoard);
-      var expectedBoard = !_.isUndefined(example.expectedBoard) ? this._getBoardFromGbb(example.expectedBoard) : undefined;
-      return this._makeBatchReport(this.run(finalCode, initialBoard), initialBoard, expectedBoard);
+      var initialBoard = this._parseGbbIfNeeded(example.initialBoard);
+      var expectedBoard = !_.isUndefined(example.expectedBoard) ? this._parseGbbIfNeeded(example.expectedBoard) : undefined;
+      exampleResult = this._buildExampleResult(this.run(finalCode, initialBoard), initialBoard, expectedBoard);
     } catch (error) {
-      return this._makeBatchReport(error, initialBoard, expectedBoard, "finalBoardError");
+      exampleResult = this._buildExampleResult(error, initialBoard, expectedBoard, "finalBoardError");
     }
+    exampleResult.title = example.title;
+    return exampleResult;
   }
 
-  _makeBatchReport (report, initialBoard, expectedBoard, finalBoardKey) {
+  _buildExampleResult (report, initialBoard, expectedBoard, finalBoardKey) {
     var result = {
       initialBoard: initialBoard,
       expectedBoard: expectedBoard,
@@ -157,17 +160,17 @@ class GobstonesTestRunner {
     return report;
   }
 
-  _validateBatch(batch) {
-    if (!_.isString(batch.code))
+  _validateTests(tests) {
+    if (!_.isString(tests.code))
       throw new Error("`code` should be a string.");
-    if (batch.extraCode != null && !_.isString(batch.extraCode))
+    if (tests.extraCode != null && !_.isString(tests.extraCode))
       throw new Error("`extraCode` should be a string.");
-    if (!_.isArray(batch.examples))
+    if (!_.isArray(tests.examples))
       throw new Error("`examples` should be an array.");
 
   }
 
-  _buildBatchResult(exampleResults, mulangAst) {
+  _buildTestResult(exampleResults, mulangAst) {
     let status;
     if (exampleResults.some((it) =>  it.status !== 'passed')) {
       status = 'errored';
@@ -179,6 +182,7 @@ class GobstonesTestRunner {
 
     exampleResults = exampleResults.map((it) => {
       it.result.interpreterStatus = it.status;
+      if (it.title) it.result.title = it.title;
       return it.result;
     });
     return {status: status, results: exampleResults, mulangAst: mulangAst};
