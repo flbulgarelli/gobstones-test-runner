@@ -1,6 +1,17 @@
+sudo: false
 language: node_js
 node_js:
-- '6.10'
-- '10.16'
+- 6.10
+- 10.16
 script:
+- npm i && npm run build
 - npm test
+- cd gem && ./bin/setup && bundle exec rake
+deploy:
+  provider: rubygems
+  api_key:
+    secure: 2TD/k1WaehrE6urJ6kC5whu5wq2wokWG+ccKoZHC6THnXtC3JhiFtU2j8dY3zF+vGmQqMpruMNzzp4SQbYhHXeYJXf3oVQ4g9BrCDTO0gXfahbJTSUNXkQpranCw4uVKwp066k5MpONz0vj7Y3Pc/KgDb8YNJAabb+bDyFNq2Y4//57wUlkdP5QFvsVzVek+SWT1yeDukcDd1jhfaYgei8vO6BZtWxc+fVq1rxdKPcX+Q/gubPA2P32K/wOaLiJb0mlPXb/T9MYJQaxc9ZdbSyTyMptx2CyLu8+EAn6jqyejSA3d5QzdGU7jFj2b9P8F/UCbfsvZW4krfisGWiR6zTb0iSRVP6Q4IBlkbBP2yRILXMiqaEfFcZ/IbRK4O1Na9nYZm+0oBb8jf8xH1eOBCbbA3SnGydXRWR/G7GdlqmXVQFJoEzUlDn3QjNqaPoGibiAT/lqFTCs5IBhjLlMAj6RzCIznRWL6cZjKI0sxfrqHVPbzAgrHl8DXGTelfn6MIDlvxjMdaRnxgqpbvO2X0/934dUUsljAPPVVyxBSzN2IpaZ8iMQheo+erBVxJgBE1EDtrhZqaZEvtSKfpM/11zGSVzSGEA58uQia43L40sdtOiMIlo+hcYlrZPyekl60BJLeOfE56BIuLWesoP/ZY6+rRNbHt90xCvHsx+RDZj0=
+  gem: gobstones-test-runner
+  on:
+    tags: true
+    repo: flbulgarelli/gobstones-test-runner

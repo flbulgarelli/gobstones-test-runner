@@ -1,23 +1,38 @@
 {
   "name": "gobstones-test-runnner",
   "version": "0.1.0",
-  "description": "Gobstones test runner",
+  "description": "Gobstones Test Runner",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gobstones/gobstones-test-runnner.git"
+    "url": "git+https://github.com/flbulgarelli/gobstones-test-runnner.git"
   },
-  "author": "Franco Bulgarelli",
-  "license": "ISC",
+  "author": "Franco Leonardo Bulgarelli",
+  "license": "GPL-3.0",
   "dependencies": {
     "lodash": "^4.17.2"
   },
   "devDependencies": {
     "gobstones-interpreter": "^2.0",
-    "chai": "^3.5.0",
-    "mocha": "^3.2.0",
-    "should": "^11.1.2"
+    "clean-webpack-plugin": "^1.0.1",
+    "html-webpack-plugin": "^3.2.0",
+    "mocha": "^5.2.0",
+    "sinon": "^7.2.3",
+    "should": "^11.1.2",
+    "webpack": "^4.29.0",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14",
+    "webpack-merge": "^4.2.1"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha ./test/*-spec.js"
+    "test": "mocha ",
+    "start": "webpack-dev-server --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
+  },
+  "bugs": {
+    "url": "https://github.com/flbulgarelli/gobstones-test-runner/issues"
   }
 }

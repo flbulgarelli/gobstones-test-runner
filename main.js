@@ -1,1 +1,0 @@
-window.GobstonesTestRunner = require('./src/runner.js');
