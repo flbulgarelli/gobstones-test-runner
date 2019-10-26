@@ -125,14 +125,15 @@ class GobstonesTestRunner {
     return code + "\n" + extraCode;
   }
 
-  _processExample(example, code, extraCode) {
+  _processExample(originalExample, code, extraCode) {
+    const example = Object.assign({}, originalExample);
     let exampleResult;
     try {
       var finalStudentCode = example.codeOverride || code;
       var finalCode = this._buildBatchCode(finalStudentCode, extraCode);
-      var initialBoard = this._parseGbbIfNeeded(example.initialBoard);
-      var expectedBoard = !_.isUndefined(example.expectedBoard) ? this._parseGbbIfNeeded(example.expectedBoard) : undefined;
-      exampleResult = this._buildCompletedExampleResult(this.run(finalCode, initialBoard), initialBoard, expectedBoard);
+      example.initialBoard = this._parseGbbIfNeeded(example.initialBoard);
+      example.expectedBoard = !_.isUndefined(example.expectedBoard) ? this._parseGbbIfNeeded(example.expectedBoard) : undefined;
+      exampleResult = this._buildCompletedExampleResult(this.run(finalCode, example.initialBoard), example);
     } catch (error) {
       exampleResult = { status: 'errored', error};
     }
@@ -142,25 +143,25 @@ class GobstonesTestRunner {
     return exampleResult;
   }
 
-  _buildCompletedExampleResult(report, initialBoard, expectedBoard) {
+  _buildCompletedExampleResult(report, example) {
     var result = {
-      initialBoard: initialBoard.gbb,
+      initialBoard: example.initialBoard.gbb,
       //TODO returnValue: report.returnValue,
     };
 
 
-    if (report.finalBoard && report.finalBoard.table && expectedBoard) {
+    if (report.finalBoard && report.finalBoard.table && example.expectedBoard) {
       // has final board an expected final board
-      result.expectedBoard = expectedBoard.gbb;
+      result.expectedBoard = example.expectedBoard.gbb;
       result.finalBoard = report.finalBoard.gbb;
-      result.status = _.isEqual(expectedBoard.table, report.finalBoard.table) ? 'passed' : 'failed'
-    } else if (report.error && report.error.reason.code === 'cannot-move-to' && !expectedBoard) {
+      result.status = _.isEqual(example.expectedBoard.table, report.finalBoard.table) ? 'passed' : 'failed'
+    } else if (report.error && report.error.reason.code === 'cannot-move-to' && !example.expectedBoard && example.expectedError === 'out_of_board') {
       // can not move and no final board expected
       result.status = 'passed';
-    } else if (expectedBoard) {
+    } else if (example.expectedBoard) {
       // has no final boad, but a final board was expected
       result.status = 'failed';
-      result.expectedBoard = expectedBoard.gbb;
+      result.expectedBoard = example.expectedBoard.gbb;
     } else {
       // has final board nut no final board was expected, or
       result.status = 'failed';

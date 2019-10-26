@@ -142,7 +142,7 @@ describe("api", () => {
         },
         {
           "initialBoard": "GBB/1.0\nsize 1 1\nhead 0 0",
-          "error": "out_of_board"
+          "expectedError": "out_of_board"
         }
       ]
     })
