@@ -18,11 +18,7 @@ class GobstonesTestRunner {
       return this._buildTestResult(testResults, mulangAst);
     } catch (e) {
       if (e.status) {
-        return Object.assign(
-          {
-            status: 'errored',
-            interpreterStatus: e.status
-          }, e.result);
+        return Object.assign({ status: 'errored' }, e.error);
       }
       throw e;
     }
@@ -46,13 +42,15 @@ class GobstonesTestRunner {
   run(code, initialBoard) {
     try {
       const program = this._parseProgram(code);
-      if (!program) throw { status: "no_program_found" };
+      if (!program) return { status: "no_program_found" };
+
       const result = this._interpret(program, initialBoard);
-      const executionReport = this._buildBoard(result.finalBoard);
-      executionReport.returnValue = result.returnValue;
+      const finalBoard = this._buildBoard(result.finalBoard);
+
       return {
         status: "passed",
-        result: executionReport
+        returnValue: result.returnValue,
+        finalBoard
       }
     } catch (e) {
       if (e.status) {
@@ -68,7 +66,7 @@ class GobstonesTestRunner {
     if (result.reason)
       throw {
         status: "compilation_error",
-        result: result
+        error: result
       };
 
     return result;
@@ -85,7 +83,7 @@ class GobstonesTestRunner {
 
       throw {
         status: "runtime_error",
-        result: result
+        error: result
       };
     }
 
@@ -118,7 +116,7 @@ class GobstonesTestRunner {
     if (_.isString(gbbOrBoard)) {
       board = this._readGbb(gbbOrBoard);
     } else {
-      board = gbbOrBoard
+      board = gbbOrBoard;
     }
     return this._buildBoard(board);
   }
@@ -134,30 +132,42 @@ class GobstonesTestRunner {
       var finalCode = this._buildBatchCode(finalStudentCode, extraCode);
       var initialBoard = this._parseGbbIfNeeded(example.initialBoard);
       var expectedBoard = !_.isUndefined(example.expectedBoard) ? this._parseGbbIfNeeded(example.expectedBoard) : undefined;
-      exampleResult = this._buildExampleResult(this.run(finalCode, initialBoard), initialBoard, expectedBoard);
+      exampleResult = this._buildCompletedExampleResult(this.run(finalCode, initialBoard), initialBoard, expectedBoard);
     } catch (error) {
-      exampleResult = this._buildExampleResult(error, initialBoard, expectedBoard, "finalBoardError");
+      exampleResult = { status: 'errored', error};
     }
-    exampleResult.title = example.title;
+    if (example.title) {
+      exampleResult.title = example.title;
+    }
     return exampleResult;
   }
 
-  _buildExampleResult (report, initialBoard, expectedBoard, finalBoardKey) {
+  _buildCompletedExampleResult(report, initialBoard, expectedBoard) {
     var result = {
-      initialBoard: initialBoard,
-      expectedBoard: expectedBoard,
+      initialBoard: initialBoard.gbb,
+      //TODO returnValue: report.returnValue,
     };
-    result[finalBoardKey || "finalBoard"] = report.result;
-    if (result.finalBoard) {
-      result.status = _.isEqual(result.expectedBoard.table, result.finalBoard.table) ? 'passed' : 'failed';
-      result.returnValue = result.finalBoard.returnValue;
-      result.finalBoard = result.finalBoard.gbb;
-    }
-    result.initialBoard = result.initialBoard.gbb;
-    result.expectedBoard = result.expectedBoard.gbb;
-    report.result = result;
 
-    return report;
+
+    if (report.finalBoard && report.finalBoard.table && expectedBoard) {
+      // has final board an expected final board
+      result.expectedBoard = expectedBoard.gbb;
+      result.finalBoard = report.finalBoard.gbb;
+      result.status = _.isEqual(expectedBoard.table, report.finalBoard.table) ? 'passed' : 'failed'
+    } else if (report.error && report.error.reason.code === 'cannot-move-to' && !expectedBoard) {
+      // can not move and no final board expected
+      result.status = 'passed';
+    } else if (expectedBoard) {
+      // has no final boad, but a final board was expected
+      result.status = 'failed';
+      result.expectedBoard = expectedBoard.gbb;
+    } else {
+      // has final board nut no final board was expected, or
+      result.status = 'failed';
+      result.finalBoard = report.finalBoard.gbb;
+    }
+
+    return result;
   }
 
   _validateTests(tests) {
@@ -172,19 +182,13 @@ class GobstonesTestRunner {
 
   _buildTestResult(exampleResults, mulangAst) {
     let status;
-    if (exampleResults.some((it) =>  it.status !== 'passed')) {
-      status = 'errored';
-    } else if (exampleResults.every((it) =>  it.result.status == 'passed')) {
+    if (exampleResults.every((it) =>  it.status === 'passed')) {
       status = 'passed';
+    } else if (exampleResults.some((it) =>  it.status === 'errored')) {
+      status = 'errored';
     } else {
       status = 'failed';
     }
-
-    exampleResults = exampleResults.map((it) => {
-      it.result.interpreterStatus = it.status;
-      if (it.title) it.result.title = it.title;
-      return it.result;
-    });
     return {status: status, results: exampleResults, mulangAst: mulangAst};
   }
 }
