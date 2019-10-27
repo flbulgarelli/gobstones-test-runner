@@ -195,6 +195,115 @@ describe("api", () => {
 
   });
 
+  context("evaluates tests with no_stones", () => {
+    const ast = {
+      "tag":"EntryPoint",
+      "contents":[
+        "program",
+        { "tag":"Application", "contents":[
+            { "tag":"Reference", "contents":"Sacar" },
+            [ { "tag":"MuSymbol", "contents":"Rojo" }] ]
+        }
+      ]
+    }
+
+    it("works when passed", () => {
+      const result = runner.runTests({
+        "code": "program { Sacar(Rojo) }",
+        "examples": [
+          {
+            "initialBoard": "GBB/1.0\nsize 2 2\ncell 0 0 Rojo 1\nhead 0 0",
+            "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 0",
+          },
+          {
+            "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0",
+            "expectedError": "no_stones"
+          }
+        ]
+      })
+
+      assert.deepStrictEqual(result, {
+        "status": "passed",
+        "results":[
+          {
+            "status":"passed",
+            "initialBoard": "GBB/1.0\nsize 2 2\ncell 0 0 Rojo 1\nhead 0 0\n",
+            "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+            "finalBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+          },
+          {
+            "status":"passed",
+            "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+            "expectedError": "no_stones",
+            "actualError": "no_stones"
+          }
+        ],
+        "mulangAst": ast
+      })
+    });
+
+    it("works when passed, using internal name", () => {
+      const result = runner.runTests({
+        "code": "program { Sacar(Rojo) }",
+        "examples": [
+          {
+            "initialBoard": "GBB/1.0\nsize 2 2\ncell 0 0 Rojo 1\nhead 0 0",
+            "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 0",
+          },
+          {
+            "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0",
+            "expectedError": "cannot-remove-stone"
+          }
+        ]
+      })
+
+      assert.deepStrictEqual(result, {
+        "status": "passed",
+        "results":[
+          {
+            "status":"passed",
+            "initialBoard": "GBB/1.0\nsize 2 2\ncell 0 0 Rojo 1\nhead 0 0\n",
+            "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+            "finalBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+          },
+          {
+            "status":"passed",
+            "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+            "expectedError": "no_stones",
+            "actualError": "no_stones"
+          }
+        ],
+        "mulangAst": ast
+      })
+    });
+
+    it("works when failed", () => {
+      const result = runner.runTests({
+        "code": "program { Sacar(Rojo) }",
+        "examples": [
+          {
+            "initialBoard": "GBB/1.0\nsize 3 3\ncell 0 0 Rojo 1\nhead 0 0\n",
+            "expectedError": "no_stones"
+          }
+        ]
+      })
+
+      assert.deepStrictEqual(result, {
+        "status": "failed",
+        "results":[
+          {
+            "status":"failed",
+            "initialBoard": "GBB/1.0\nsize 3 3\ncell 0 0 Rojo 1\nhead 0 0\n",
+            "expectedError": "no_stones",
+            "finalBoard": "GBB/1.0\nsize 3 3\nhead 0 0\n",
+          }
+        ],
+        "mulangAst": ast
+      })
+    });
+
+  });
+
   it("evaluates tests with passed tests", () => {
     const result = runner.runTests({
       "code": "program { Poner(Rojo) }",

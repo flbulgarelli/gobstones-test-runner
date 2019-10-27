@@ -1,6 +1,15 @@
 var mulang = require('./mulang');
 var _ = require("lodash");
 
+const PUBLIC_ERROR_CODES = {
+  "cannot-move-to": "out_of_board",
+  "cannot-remove-stone": "no_stones"
+};
+
+function publicErrorCodeFor(errorCode) {
+  return PUBLIC_ERROR_CODES[errorCode] || errorCode;
+}
+
 class GobstonesTestRunner {
   constructor(interpreter) {
     this.interpreter = interpreter;
@@ -151,25 +160,25 @@ class GobstonesTestRunner {
 
 
     if (report.finalBoard && report.finalBoard.table && example.expectedBoard) {
-      // has final board an expected final board
+      // has final board and expected board
       result.expectedBoard = example.expectedBoard.gbb;
       result.finalBoard = report.finalBoard.gbb;
       result.status = _.isEqual(example.expectedBoard.table, report.finalBoard.table) ? 'passed' : 'failed'
-    } else if (report.error && report.error.reason.code === 'cannot-move-to' && !example.expectedBoard && example.expectedError === 'out_of_board') {
-      // can not move and no final board expected
-      result.status = 'passed';
-      result.actualError = "out_of_board";
-      result.expectedError = "out_of_board";
+    } else if (report.error && example.expectedError) {
+      // has actual error and expected error
+      result.actualError = publicErrorCodeFor(report.error.reason.code);
+      result.expectedError = publicErrorCodeFor(example.expectedError);
+      result.status = result.actualError === result.expectedError ? 'passed' : 'failed';
     } else if (example.expectedBoard) {
-      // has no final board, but a final board was expected
-      result.status = 'failed';
+      // has actual error and expected board
       result.expectedBoard = example.expectedBoard.gbb;
-      result.actualError = "out_of_board";
-    } else {
-      // has final board but no final board was expected
+      result.actualError = publicErrorCodeFor(report.error.reason.code);
       result.status = 'failed';
+    } else {
+      // has final board and expected error
       result.finalBoard = report.finalBoard.gbb;
-      result.expectedError = "out_of_board";
+      result.expectedError = example.expectedError;
+      result.status = 'failed';
     }
 
     return result;
@@ -182,7 +191,10 @@ class GobstonesTestRunner {
       throw new Error("`extraCode` should be a string.");
     if (!_.isArray(tests.examples))
       throw new Error("`examples` should be an array.");
-
+    if (!_.isArray(tests.examples))
+      throw new Error("`examples` should be an array.");
+    if (tests.examples.some(it => it.expectedBoard && it.expectedError))
+      throw new Error("An example must have `expectedBoard` or `expectedError`, but not both.");
   }
 
   _buildTestResult(exampleResults, mulangAst) {
