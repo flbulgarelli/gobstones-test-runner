@@ -3,7 +3,8 @@ var _ = require("lodash");
 
 const PUBLIC_ERROR_CODES = {
   "cannot-move-to": "out_of_board",
-  "cannot-remove-stone": "no_stones"
+  "cannot-remove-stone": "no_stones",
+  "primitive-argument-type-mismatch": "wrong_argument_type"
 };
 
 function publicErrorCodeFor(errorCode) {

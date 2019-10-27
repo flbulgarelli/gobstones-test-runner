@@ -61,7 +61,52 @@ describe("api", () => {
     });
   });
 
-   it("evaluates tests with titles", () => {
+  it("does not compare boards when an error occurs", () => {
+    const result = runner.runTests({
+      "code": "program { Mover(Rojo) }",
+      "examples": [
+        {
+          "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0",
+          "expectedBoard": "GBB/1.0\nsize 4 4\nhead 0 0",
+        }
+      ]
+    })
+
+    assert.deepStrictEqual(result, {
+      "status": "failed",
+      "results":[
+        {
+          "status":"failed",
+          "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
+          "expectedBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
+          "actualError": "wrong_argument_type"
+        }
+      ],
+      "mulangAst":{
+        "tag":"EntryPoint",
+        "contents":[
+          "program",
+          {
+            "tag":"Application",
+            "contents":[
+              {
+                "tag":"Reference",
+                "contents":"Mover"
+              },
+              [
+                {
+                  "tag":"MuSymbol",
+                  "contents":"Rojo"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    });
+  });
+
+  it("evaluates tests with titles", () => {
     const result = runner.runTests({
       "code": "program { Meter(Rojo) }",
       "extraCode": "procedure Meter(color) { Poner(color) }",
@@ -119,6 +164,42 @@ describe("api", () => {
         ]
       }
     });
+  });
+
+  it("evaluates tests with wrong_argument_type", () => {
+    const ast = {
+      "tag":"EntryPoint",
+      "contents":[
+        "program",
+        { "tag":"Application", "contents":[
+            { "tag":"Reference", "contents":"Mover" },
+            [ { "tag":"MuSymbol", "contents":"Rojo" }] ]
+        }
+      ]
+    }
+
+    const result = runner.runTests({
+      "code": "program { Mover(Rojo) }",
+      "examples": [
+        {
+          "initialBoard": "GBB/1.0\nsize 1 1\nhead 0 0",
+          "expectedError": "wrong_argument_type"
+        }
+      ]
+    })
+
+    assert.deepStrictEqual(result, {
+      "status": "passed",
+      "results":[
+        {
+          "status":"passed",
+          "initialBoard": "GBB/1.0\nsize 1 1\nhead 0 0\n",
+          "expectedError": "wrong_argument_type",
+          "actualError": "wrong_argument_type"
+        }
+      ],
+      "mulangAst": ast
+    })
   });
 
   context("evaluates tests with out_of_board", () => {
