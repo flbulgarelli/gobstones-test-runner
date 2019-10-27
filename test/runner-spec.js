@@ -121,7 +121,7 @@ describe("api", () => {
     });
   });
 
-  it("evaluates tests with out_of_board", () => {
+  context("evaluates tests with out_of_board", () => {
     const ast = {
       "tag":"EntryPoint",
       "contents":[
@@ -133,36 +133,66 @@ describe("api", () => {
       ]
     }
 
-    const result = runner.runTests({
-      "code": "program { Mover(Norte) }",
-      "examples": [
-        {
-          "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0",
-          "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 1",
-        },
-        {
-          "initialBoard": "GBB/1.0\nsize 1 1\nhead 0 0",
-          "expectedError": "out_of_board"
-        }
-      ]
-    })
+    it("works when passed", () => {
+      const result = runner.runTests({
+        "code": "program { Mover(Norte) }",
+        "examples": [
+          {
+            "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0",
+            "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 1",
+          },
+          {
+            "initialBoard": "GBB/1.0\nsize 1 1\nhead 0 0",
+            "expectedError": "out_of_board"
+          }
+        ]
+      })
 
-    assert.deepStrictEqual(result, {
-      "status": "passed",
-      "results":[
-        {
-          "status":"passed",
-          "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
-          "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 1\n",
-          "finalBoard": "GBB/1.0\nsize 2 2\nhead 0 1\n",
-        },
-        {
-          "status":"passed",
-          "initialBoard": "GBB/1.0\nsize 1 1\nhead 0 0\n",
-        }
-      ],
-      "mulangAst": ast
+      assert.deepStrictEqual(result, {
+        "status": "passed",
+        "results":[
+          {
+            "status":"passed",
+            "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+            "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 1\n",
+            "finalBoard": "GBB/1.0\nsize 2 2\nhead 0 1\n",
+          },
+          {
+            "status":"passed",
+            "initialBoard": "GBB/1.0\nsize 1 1\nhead 0 0\n",
+            "expectedError": "out_of_board",
+            "actualError": "out_of_board"
+          }
+        ],
+        "mulangAst": ast
+      })
     });
+
+    it("works when failed", () => {
+      const result = runner.runTests({
+        "code": "program { Mover(Norte) }",
+        "examples": [
+          {
+            "initialBoard": "GBB/1.0\nsize 3 3\nhead 0 0",
+            "expectedError": "out_of_board"
+          }
+        ]
+      })
+
+      assert.deepStrictEqual(result, {
+        "status": "failed",
+        "results":[
+          {
+            "status":"failed",
+            "initialBoard": "GBB/1.0\nsize 3 3\nhead 0 0\n",
+            "expectedError": "out_of_board",
+            "finalBoard": "GBB/1.0\nsize 3 3\nhead 0 1\n"
+          }
+        ],
+        "mulangAst": ast
+      })
+    });
+
   });
 
   it("evaluates tests with passed tests", () => {

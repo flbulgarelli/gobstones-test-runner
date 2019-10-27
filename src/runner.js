@@ -158,14 +158,18 @@ class GobstonesTestRunner {
     } else if (report.error && report.error.reason.code === 'cannot-move-to' && !example.expectedBoard && example.expectedError === 'out_of_board') {
       // can not move and no final board expected
       result.status = 'passed';
+      result.actualError = "out_of_board";
+      result.expectedError = "out_of_board";
     } else if (example.expectedBoard) {
-      // has no final boad, but a final board was expected
+      // has no final board, but a final board was expected
       result.status = 'failed';
       result.expectedBoard = example.expectedBoard.gbb;
+      result.actualError = "out_of_board";
     } else {
-      // has final board nut no final board was expected, or
+      // has final board but no final board was expected
       result.status = 'failed';
       result.finalBoard = report.finalBoard.gbb;
+      result.expectedError = "out_of_board";
     }
 
     return result;
