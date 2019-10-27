@@ -17,14 +17,15 @@ class GobstonesTestRunner {
   }
 
   // run multiple batch actions
-  runTests(tests) {
-    this._validateTests(tests);
+  runTests(spec) {
+    this._validateTests(spec);
 
-    const code = _.trim(tests.code || "");
-    const extraCode = _.trim(tests.extraCode || "");
+    const code = _.trim(spec.code || "");
+    const extraCode = _.trim(spec.extraCode || "");
+    const options = spec.options || {};
     try {
       const mulangAst = this.getMulangAst(code);
-      const testResults = this._processExamples(tests.examples, code, extraCode);
+      const testResults = this._processExamples(spec.examples, code, extraCode, options);
       return this._buildTestResult(testResults, mulangAst);
     } catch (e) {
       if (e.status) {
@@ -117,8 +118,8 @@ class GobstonesTestRunner {
     return this.parse(code).program;
   }
 
-  _processExamples(examples, code, extraCode) {
-    return examples.map((example) => this._processExample(example, code, extraCode));
+  _processExamples(examples, code, extraCode, options) {
+    return examples.map((example) => this._processExample(example, code, extraCode, options));
   }
 
   _parseGbbIfNeeded(gbbOrBoard) {
@@ -135,7 +136,7 @@ class GobstonesTestRunner {
     return code + "\n" + extraCode;
   }
 
-  _processExample(originalExample, code, extraCode) {
+  _processExample(originalExample, code, extraCode, options) {
     const example = Object.assign({}, originalExample);
     let exampleResult;
     try {
@@ -143,7 +144,7 @@ class GobstonesTestRunner {
       var finalCode = this._buildBatchCode(finalStudentCode, extraCode);
       example.initialBoard = this._parseGbbIfNeeded(example.initialBoard);
       example.expectedBoard = !_.isUndefined(example.expectedBoard) ? this._parseGbbIfNeeded(example.expectedBoard) : undefined;
-      exampleResult = this._buildCompletedExampleResult(this.run(finalCode, example.initialBoard), example);
+      exampleResult = this._evaluateExampleResult(this.run(finalCode, example.initialBoard), example, options);
     } catch (error) {
       exampleResult = { status: 'errored', error};
     }
@@ -153,18 +154,17 @@ class GobstonesTestRunner {
     return exampleResult;
   }
 
-  _buildCompletedExampleResult(report, example) {
+  _evaluateExampleResult(report, example, options) {
     var result = {
       initialBoard: example.initialBoard.gbb,
       //TODO returnValue: report.returnValue,
     };
 
-
     if (report.finalBoard && report.finalBoard.table && example.expectedBoard) {
       // has final board and expected board
       result.expectedBoard = example.expectedBoard.gbb;
       result.finalBoard = report.finalBoard.gbb;
-      result.status = _.isEqual(example.expectedBoard.table, report.finalBoard.table) ? 'passed' : 'failed'
+      result.status = this._compareBoards(example.expectedBoard, report.finalBoard, options) ? 'passed' : 'failed'
     } else if (report.error && example.expectedError) {
       // has actual error and expected error
       result.actualError = publicErrorCodeFor(report.error.reason.code);
@@ -183,6 +183,10 @@ class GobstonesTestRunner {
     }
 
     return result;
+  }
+
+  _compareBoards(expected, final, options) {
+    return _.isEqual(expected.table, final.table) && (!options.checkHeadPosition || _.isEqual(expected.head,final.head));
   }
 
   _validateTests(tests) {

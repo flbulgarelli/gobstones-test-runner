@@ -7,8 +7,8 @@ describe("api", () => {
 
   it("evaluates tests", () => {
     const result = runner.runTests({
-      "code": "program { Meter(Rojo) }",
-      "extraCode": "procedure Meter(color) { Poner(color) }",
+      "code": "program { Depositar(Rojo) }",
+      "extraCode": "procedure Depositar(color) { Poner(color) }",
       "examples": [
         {
           "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0",
@@ -46,12 +46,70 @@ describe("api", () => {
             "contents":[
               {
                 "tag":"Reference",
-                "contents":"Meter"
+                "contents":"Depositar"
               },
               [
                 {
                   "tag":"MuSymbol",
                   "contents":"Rojo"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    });
+  });
+
+  it("evaluates with head position checking", () => {
+    const result = runner.runTests({
+      "code": "program { Mover(Norte) }",
+      "options": {
+        "checkHeadPosition": true
+      },
+      "examples": [
+        {
+          "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0",
+          "expectedBoard": "GBB/1.0\nsize 4 4\nhead 0 3",
+        },
+        {
+          "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0",
+          "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 1",
+        }
+      ]
+    })
+
+    assert.deepStrictEqual(result, {
+      "status": "failed",
+      "results":[
+        {
+          "status":"failed",
+          "initialBoard": "GBB/1.0\nsize 4 4\nhead 0 0\n",
+          "expectedBoard": "GBB/1.0\nsize 4 4\nhead 0 3\n",
+          "finalBoard": "GBB/1.0\nsize 4 4\nhead 0 1\n",
+        },
+        {
+          "status":"passed",
+          "initialBoard": "GBB/1.0\nsize 2 2\nhead 0 0\n",
+          "expectedBoard": "GBB/1.0\nsize 2 2\nhead 0 1\n",
+          "finalBoard": "GBB/1.0\nsize 2 2\nhead 0 1\n"
+        }
+      ],
+      "mulangAst":{
+        "tag":"EntryPoint",
+        "contents":[
+          "program",
+          {
+            "tag":"Application",
+            "contents":[
+              {
+                "tag":"Reference",
+                "contents":"Mover"
+              },
+              [
+                {
+                  "tag":"MuSymbol",
+                  "contents":"Norte"
                 }
               ]
             ]
@@ -108,8 +166,8 @@ describe("api", () => {
 
   it("evaluates tests with titles", () => {
     const result = runner.runTests({
-      "code": "program { Meter(Rojo) }",
-      "extraCode": "procedure Meter(color) { Poner(color) }",
+      "code": "program { Depositar(Rojo) }",
+      "extraCode": "procedure Depositar(color) { Poner(color) }",
       "examples": [
         {
           "title": "Works with 4x4 board",
@@ -151,7 +209,7 @@ describe("api", () => {
             "contents":[
               {
                 "tag":"Reference",
-                "contents":"Meter"
+                "contents":"Depositar"
               },
               [
                 {
@@ -465,8 +523,8 @@ describe("api", () => {
 
   it("evaluates tests with tables", () => {
     const result = runner.runTests({
-      "code": "program { Meter(Rojo) }",
-      "extraCode": "procedure Meter(color) { Poner(color) }",
+      "code": "program { Depositar(Rojo) }",
+      "extraCode": "procedure Depositar(color) { Poner(color) }",
       "examples": [
         {
           "initialBoard": {head: {x: 0, y: 0}, width: 2, height: 2, table: [[{}, {}], [{}, {}]]},
@@ -494,7 +552,7 @@ describe("api", () => {
             "contents":[
               {
                 "tag":"Reference",
-                "contents":"Meter"
+                "contents":"Depositar"
               },
               [
                 {
